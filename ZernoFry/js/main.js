@@ -1,25 +1,57 @@
 /**
  * ZernoFry — main.js
- * Core UI Logic:
- * 1. Multilingual translation engine with localStorage persistence.
- * 2. Dynamic PDF and attribute switching (data-i18n-href, data-i18n).
- * 3. Sticky header on scroll.
- * 4. IntersectionObserver scroll animations.
- * 5. Smooth navigation and back-to-top handler.
+ * Optimized for Mobile & Desktop:
+ * - Hamburger drawer menu with backdrop toggle
+ * - Auto-close menu on link click
+ * - Multilingual engine with persistent state
+ * - Smooth scroll & IntersectionObserver
  */
 (function () {
   "use strict";
 
-  const SUPPORTED_LANGS = Object.keys(translations); // ['en', 'de', 'uk']
+  const SUPPORTED_LANGS = Object.keys(translations);
   const DEFAULT_LANG = "en";
   const STORAGE_KEY = "zernofry-lang";
 
   const header = document.querySelector(".header");
+  const nav = document.querySelector("#nav");
+  const navToggle = document.querySelector("#navToggle");
+  const navOverlay = document.querySelector("#navOverlay");
   const langButtons = document.querySelectorAll(".lang-btn");
   const navLinks = document.querySelectorAll(".nav__link");
   const revealElements = document.querySelectorAll(".reveal");
   const backToTop = document.querySelector(".back-to-top");
   const anchorLinks = document.querySelectorAll('a[href^="#"]');
+
+  // ===== Мобільне меню-гамбургер =====
+  function initMobileMenu() {
+    if (!navToggle || !nav || !navOverlay) return;
+
+    function toggleMenu(isOpen) {
+      const open =
+        typeof isOpen === "boolean" ? isOpen : !nav.classList.contains("open");
+      nav.classList.toggle("open", open);
+      navToggle.classList.toggle("active", open);
+      navOverlay.classList.toggle("visible", open);
+      document.body.classList.toggle("menu-open", open);
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    navToggle.addEventListener("click", () => toggleMenu());
+    navOverlay.addEventListener("click", () => toggleMenu(false));
+
+    // Закриття меню при кліку на будь-яке посилання
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => toggleMenu(false));
+    });
+
+    // Закриття меню на Escape
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && nav.classList.contains("open")) {
+        toggleMenu(false);
+      }
+    });
+  }
 
   // ===== Language Switcher =====
   function detectInitialLang() {
@@ -52,7 +84,7 @@
       metaDesc.setAttribute("content", dict["meta.description"]);
     }
 
-    // Оновлення тексту в тегах
+    // Тексти
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
       if (dict[key] !== undefined) {
@@ -64,7 +96,7 @@
       }
     });
 
-    // Динамічне оновлення шляхів до PDF для кнопок скачування
+    // Динамічні посилання на PDF
     document.querySelectorAll("[data-i18n-href]").forEach((el) => {
       const key = el.getAttribute("data-i18n-href");
       if (dict[key] !== undefined) {
@@ -72,7 +104,7 @@
       }
     });
 
-    // Підсвічування активної кнопки мови
+    // Підсвічування кнопки мови
     langButtons.forEach((btn) => {
       const btnLang = btn.getAttribute("data-lang");
       btn.classList.toggle("active", btnLang === lang);
@@ -97,7 +129,7 @@
     if (!header) return;
 
     const checkScroll = () => {
-      const scrolled = window.scrollY > 60;
+      const scrolled = window.scrollY > 40;
       header.classList.toggle("scrolled", scrolled);
     };
 
@@ -119,7 +151,7 @@
     );
   }
 
-  // ===== Scroll Reveal Animation =====
+  // ===== Scroll Reveal =====
   function initScrollReveal() {
     if (!revealElements.length) return;
 
@@ -138,27 +170,25 @@
         });
       },
       {
-        threshold: 0.15,
-        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.1,
+        rootMargin: "0px 0px -30px 0px",
       },
     );
 
     revealElements.forEach((el) => observer.observe(el));
   }
 
-  // ===== Smooth Scroll for Anchor Links =====
+  // ===== Smooth Scroll =====
   function initSmoothScroll() {
     anchorLinks.forEach((link) => {
       link.addEventListener("click", function (e) {
         const targetId = this.getAttribute("href");
-        if (targetId === "#") {
-          e.preventDefault();
-          return;
-        }
+        if (!targetId || targetId === "#") return;
+
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           e.preventDefault();
-          const headerHeight = header ? header.offsetHeight : 80;
+          const headerHeight = header ? header.offsetHeight : 70;
           const targetPosition = targetElement.offsetTop - headerHeight;
           window.scrollTo({
             top: targetPosition,
@@ -173,32 +203,22 @@
   function initBackToTop() {
     if (!backToTop) return;
 
-    const toggleVisibility = () => {
-      const visible = window.scrollY > 450;
-      backToTop.classList.toggle("visible", visible);
-    };
-
-    toggleVisibility();
-
     window.addEventListener(
       "scroll",
       () => {
-        toggleVisibility();
+        backToTop.classList.toggle("visible", window.scrollY > 400);
       },
       { passive: true },
     );
 
     backToTop.addEventListener("click", () => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
   // ===== Active Nav Link on Scroll =====
   function initActiveNavLinks() {
-    if (!navLinks.length) return;
+    if (!navLinks.length || !("IntersectionObserver" in window)) return;
 
     const sections = Array.from(navLinks)
       .map((link) => {
@@ -209,27 +229,24 @@
       })
       .filter(Boolean);
 
-    if (!sections.length || !("IntersectionObserver" in window)) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const id = entry.target.getAttribute("id");
             navLinks.forEach((l) => {
-              const active = l.getAttribute("href") === `#${id}`;
-              l.classList.toggle("active", active);
+              l.classList.toggle("active", l.getAttribute("href") === `#${id}`);
             });
           }
         });
       },
-      { threshold: 0.3 },
+      { threshold: 0.25 },
     );
 
     sections.forEach((section) => observer.observe(section));
   }
 
-  // ===== Contact Form Demo Handling =====
+  // ===== Form Feedback =====
   function initContactForm() {
     const form = document.querySelector(".contact-form");
     if (!form) return;
@@ -252,6 +269,7 @@
 
   // ===== App Init =====
   document.addEventListener("DOMContentLoaded", () => {
+    initMobileMenu();
     initLangSwitch();
     initStickyHeader();
     initScrollReveal();
