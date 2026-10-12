@@ -1,7 +1,8 @@
 /**
  * ZernoFry — translations dictionary
- * Complete dictionary for EN, DE, UK languages.
- * Handles text, placeholders, ingredients, and dynamic multilingual PDF specification downloads.
+ * Повний словник перекладів для трьох мов: EN, DE, UK.
+ * Включає тексти інтерфейсу, склад продукції, бейджи стандартів якості (ISO 9001, ISO 22000, HACCP)
+ * та динамічні посилання на PDF-специфікації.
  */
 const translations = {
   en: {
@@ -88,11 +89,11 @@ const translations = {
 
     "quality.title": "Quality & Logistics",
     "quality.iso9001": "ISO 9001",
-    "quality.iso9001.detail": "Quality Management",
-    "quality.iso22000": "ISO 22000 (HACCP)",
-    "quality.iso22000.detail": "Food Safety",
-    "quality.nonGmo": "Non-GMO",
-    "quality.nonGmo.detail": "Verified Non-Genetically Modified",
+    "quality.iso9001.detail": "Quality Management System",
+    "quality.iso22000": "ISO 22000",
+    "quality.iso22000.detail": "Food Safety Management",
+    "quality.haccp": "HACCP",
+    "quality.haccp.detail": "Hazard Analysis Critical Control Points",
 
     "logistics.title": "Logistics",
     "logistics.exw.tag": "EXW",
@@ -210,11 +211,11 @@ const translations = {
 
     "quality.title": "Qualität & Logistik",
     "quality.iso9001": "ISO 9001",
-    "quality.iso9001.detail": "Qualitätsmanagement",
-    "quality.iso22000": "ISO 22000 (HACCP)",
-    "quality.iso22000.detail": "Lebensmittelsicherheit",
-    "quality.nonGmo": "Ohne Gentechnik",
-    "quality.nonGmo.detail": "Geprüft gentechnikfrei",
+    "quality.iso9001.detail": "Qualitätsmanagementsystem",
+    "quality.iso22000": "ISO 22000",
+    "quality.iso22000.detail": "Lebensmittelsicherheitsmanagement",
+    "quality.haccp": "HACCP",
+    "quality.haccp.detail": "Hazard Analysis Critical Control Points",
 
     "logistics.title": "Logistik",
     "logistics.exw.tag": "EXW",
@@ -332,11 +333,11 @@ const translations = {
 
     "quality.title": "Якість та логістика",
     "quality.iso9001": "ISO 9001",
-    "quality.iso9001.detail": "Менеджмент якості",
-    "quality.iso22000": "ISO 22000 (HACCP)",
-    "quality.iso22000.detail": "Безпечність харчових продуктів",
-    "quality.nonGmo": "Без ГМО",
-    "quality.nonGmo.detail": "Підтверджена чистота сировини",
+    "quality.iso9001.detail": "Система управління якістю",
+    "quality.iso22000": "ISO 22000",
+    "quality.iso22000.detail": "Система безпечності харчових продуктів",
+    "quality.haccp": "HACCP",
+    "quality.haccp.detail": "Контроль критичних точок та безпеки виробництва",
 
     "logistics.title": "Логістика",
     "logistics.exw.tag": "EXW",
